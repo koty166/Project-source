@@ -1,0 +1,206 @@
+
+GccApplication3.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000013e  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000006  00800060  0000013e  000001b2  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  000001b8  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000001e8  2**2
+                  CONTENTS, READONLY
+  4 .debug_info   0000048c  00000000  00000000  00000224  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_abbrev 0000044e  00000000  00000000  000006b0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_line   00000109  00000000  00000000  00000afe  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_str    0000017a  00000000  00000000  00000c07  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	24 c0       	rjmp	.+72     	; 0x4c <__bad_interrupt>
+   4:	23 c0       	rjmp	.+70     	; 0x4c <__bad_interrupt>
+   6:	22 c0       	rjmp	.+68     	; 0x4c <__bad_interrupt>
+   8:	21 c0       	rjmp	.+66     	; 0x4c <__bad_interrupt>
+   a:	20 c0       	rjmp	.+64     	; 0x4c <__bad_interrupt>
+   c:	1f c0       	rjmp	.+62     	; 0x4c <__bad_interrupt>
+   e:	1e c0       	rjmp	.+60     	; 0x4c <__bad_interrupt>
+  10:	1d c0       	rjmp	.+58     	; 0x4c <__bad_interrupt>
+  12:	1c c0       	rjmp	.+56     	; 0x4c <__bad_interrupt>
+  14:	1b c0       	rjmp	.+54     	; 0x4c <__bad_interrupt>
+  16:	1a c0       	rjmp	.+52     	; 0x4c <__bad_interrupt>
+  18:	19 c0       	rjmp	.+50     	; 0x4c <__bad_interrupt>
+  1a:	18 c0       	rjmp	.+48     	; 0x4c <__bad_interrupt>
+  1c:	17 c0       	rjmp	.+46     	; 0x4c <__bad_interrupt>
+  1e:	16 c0       	rjmp	.+44     	; 0x4c <__bad_interrupt>
+  20:	15 c0       	rjmp	.+42     	; 0x4c <__bad_interrupt>
+  22:	14 c0       	rjmp	.+40     	; 0x4c <__bad_interrupt>
+  24:	13 c0       	rjmp	.+38     	; 0x4c <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf e5       	ldi	r28, 0x5F	; 95
+  2c:	d4 e0       	ldi	r29, 0x04	; 4
+  2e:	de bf       	out	0x3e, r29	; 62
+  30:	cd bf       	out	0x3d, r28	; 61
+
+00000032 <__do_copy_data>:
+  32:	10 e0       	ldi	r17, 0x00	; 0
+  34:	a0 e6       	ldi	r26, 0x60	; 96
+  36:	b0 e0       	ldi	r27, 0x00	; 0
+  38:	ee e3       	ldi	r30, 0x3E	; 62
+  3a:	f1 e0       	ldi	r31, 0x01	; 1
+  3c:	02 c0       	rjmp	.+4      	; 0x42 <__SREG__+0x3>
+  3e:	05 90       	lpm	r0, Z+
+  40:	0d 92       	st	X+, r0
+  42:	a6 36       	cpi	r26, 0x66	; 102
+  44:	b1 07       	cpc	r27, r17
+  46:	d9 f7       	brne	.-10     	; 0x3e <__SP_H__>
+  48:	6e d0       	rcall	.+220    	; 0x126 <main>
+  4a:	77 c0       	rjmp	.+238    	; 0x13a <_exit>
+
+0000004c <__bad_interrupt>:
+  4c:	d9 cf       	rjmp	.-78     	; 0x0 <__vectors>
+
+0000004e <sendhalfbyte>:
+  4e:	61 11       	cpse	r22, r1
+  50:	80 64       	ori	r24, 0x40	; 64
+  52:	97 9a       	sbi	0x12, 7	; 18
+  54:	90 e1       	ldi	r25, 0x10	; 16
+  56:	9a 95       	dec	r25
+  58:	f1 f7       	brne	.-4      	; 0x56 <sendhalfbyte+0x8>
+  5a:	00 c0       	rjmp	.+0      	; 0x5c <sendhalfbyte+0xe>
+  5c:	92 b3       	in	r25, 0x12	; 18
+  5e:	90 7f       	andi	r25, 0xF0	; 240
+  60:	92 bb       	out	0x12, r25	; 18
+  62:	92 b3       	in	r25, 0x12	; 18
+  64:	89 2b       	or	r24, r25
+  66:	82 bb       	out	0x12, r24	; 18
+  68:	97 98       	cbi	0x12, 7	; 18
+  6a:	80 e1       	ldi	r24, 0x10	; 16
+  6c:	8a 95       	dec	r24
+  6e:	f1 f7       	brne	.-4      	; 0x6c <sendhalfbyte+0x1e>
+  70:	00 c0       	rjmp	.+0      	; 0x72 <sendhalfbyte+0x24>
+  72:	08 95       	ret
+
+00000074 <sendbyte>:
+  74:	cf 93       	push	r28
+  76:	df 93       	push	r29
+  78:	c6 2f       	mov	r28, r22
+  7a:	d8 2f       	mov	r29, r24
+  7c:	d2 95       	swap	r29
+  7e:	d0 7f       	andi	r29, 0xF0	; 240
+  80:	82 95       	swap	r24
+  82:	8f 70       	andi	r24, 0x0F	; 15
+  84:	e4 df       	rcall	.-56     	; 0x4e <sendhalfbyte>
+  86:	6c 2f       	mov	r22, r28
+  88:	8d 2f       	mov	r24, r29
+  8a:	82 95       	swap	r24
+  8c:	8f 70       	andi	r24, 0x0F	; 15
+  8e:	df 91       	pop	r29
+  90:	cf 91       	pop	r28
+  92:	dd cf       	rjmp	.-70     	; 0x4e <sendhalfbyte>
+
+00000094 <sendchar>:
+  94:	61 e0       	ldi	r22, 0x01	; 1
+  96:	ee cf       	rjmp	.-36     	; 0x74 <sendbyte>
+
+00000098 <Init>:
+  98:	85 ea       	ldi	r24, 0xA5	; 165
+  9a:	9e e0       	ldi	r25, 0x0E	; 14
+  9c:	01 97       	sbiw	r24, 0x01	; 1
+  9e:	f1 f7       	brne	.-4      	; 0x9c <Init+0x4>
+  a0:	00 c0       	rjmp	.+0      	; 0xa2 <Init+0xa>
+  a2:	00 00       	nop
+  a4:	60 e0       	ldi	r22, 0x00	; 0
+  a6:	82 e0       	ldi	r24, 0x02	; 2
+  a8:	d2 df       	rcall	.-92     	; 0x4e <sendhalfbyte>
+  aa:	87 ee       	ldi	r24, 0xE7	; 231
+  ac:	93 e0       	ldi	r25, 0x03	; 3
+  ae:	01 97       	sbiw	r24, 0x01	; 1
+  b0:	f1 f7       	brne	.-4      	; 0xae <Init+0x16>
+  b2:	00 c0       	rjmp	.+0      	; 0xb4 <Init+0x1c>
+  b4:	00 00       	nop
+  b6:	60 e0       	ldi	r22, 0x00	; 0
+  b8:	88 e2       	ldi	r24, 0x28	; 40
+  ba:	dc df       	rcall	.-72     	; 0x74 <sendbyte>
+  bc:	89 ef       	ldi	r24, 0xF9	; 249
+  be:	90 e0       	ldi	r25, 0x00	; 0
+  c0:	01 97       	sbiw	r24, 0x01	; 1
+  c2:	f1 f7       	brne	.-4      	; 0xc0 <Init+0x28>
+  c4:	00 c0       	rjmp	.+0      	; 0xc6 <Init+0x2e>
+  c6:	00 00       	nop
+  c8:	60 e0       	ldi	r22, 0x00	; 0
+  ca:	81 e0       	ldi	r24, 0x01	; 1
+  cc:	d3 df       	rcall	.-90     	; 0x74 <sendbyte>
+  ce:	83 ec       	ldi	r24, 0xC3	; 195
+  d0:	99 e0       	ldi	r25, 0x09	; 9
+  d2:	01 97       	sbiw	r24, 0x01	; 1
+  d4:	f1 f7       	brne	.-4      	; 0xd2 <Init+0x3a>
+  d6:	00 c0       	rjmp	.+0      	; 0xd8 <Init+0x40>
+  d8:	00 00       	nop
+  da:	60 e0       	ldi	r22, 0x00	; 0
+  dc:	86 e0       	ldi	r24, 0x06	; 6
+  de:	ca df       	rcall	.-108    	; 0x74 <sendbyte>
+  e0:	89 ef       	ldi	r24, 0xF9	; 249
+  e2:	90 e0       	ldi	r25, 0x00	; 0
+  e4:	01 97       	sbiw	r24, 0x01	; 1
+  e6:	f1 f7       	brne	.-4      	; 0xe4 <Init+0x4c>
+  e8:	00 c0       	rjmp	.+0      	; 0xea <Init+0x52>
+  ea:	00 00       	nop
+  ec:	60 e0       	ldi	r22, 0x00	; 0
+  ee:	8f e0       	ldi	r24, 0x0F	; 15
+  f0:	c1 df       	rcall	.-126    	; 0x74 <sendbyte>
+  f2:	89 ef       	ldi	r24, 0xF9	; 249
+  f4:	90 e0       	ldi	r25, 0x00	; 0
+  f6:	01 97       	sbiw	r24, 0x01	; 1
+  f8:	f1 f7       	brne	.-4      	; 0xf6 <Init+0x5e>
+  fa:	00 c0       	rjmp	.+0      	; 0xfc <Init+0x64>
+  fc:	00 00       	nop
+  fe:	08 95       	ret
+
+00000100 <SendStr>:
+ 100:	0f 93       	push	r16
+ 102:	1f 93       	push	r17
+ 104:	cf 93       	push	r28
+ 106:	df 93       	push	r29
+ 108:	ec 01       	movw	r28, r24
+ 10a:	8c 01       	movw	r16, r24
+ 10c:	06 0f       	add	r16, r22
+ 10e:	11 1d       	adc	r17, r1
+ 110:	c0 17       	cp	r28, r16
+ 112:	d1 07       	cpc	r29, r17
+ 114:	19 f0       	breq	.+6      	; 0x11c <SendStr+0x1c>
+ 116:	89 91       	ld	r24, Y+
+ 118:	bd df       	rcall	.-134    	; 0x94 <sendchar>
+ 11a:	fa cf       	rjmp	.-12     	; 0x110 <SendStr+0x10>
+ 11c:	df 91       	pop	r29
+ 11e:	cf 91       	pop	r28
+ 120:	1f 91       	pop	r17
+ 122:	0f 91       	pop	r16
+ 124:	08 95       	ret
+
+00000126 <main>:
+ 126:	8f ef       	ldi	r24, 0xFF	; 255
+ 128:	81 bb       	out	0x11, r24	; 17
+ 12a:	12 ba       	out	0x12, r1	; 18
+ 12c:	80 e0       	ldi	r24, 0x00	; 0
+ 12e:	b4 df       	rcall	.-152    	; 0x98 <Init>
+ 130:	65 e0       	ldi	r22, 0x05	; 5
+ 132:	80 e6       	ldi	r24, 0x60	; 96
+ 134:	90 e0       	ldi	r25, 0x00	; 0
+ 136:	e4 df       	rcall	.-56     	; 0x100 <SendStr>
+ 138:	ff cf       	rjmp	.-2      	; 0x138 <main+0x12>
+
+0000013a <_exit>:
+ 13a:	f8 94       	cli
+
+0000013c <__stop_program>:
+ 13c:	ff cf       	rjmp	.-2      	; 0x13c <__stop_program>
