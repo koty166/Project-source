@@ -1,4 +1,12 @@
+#define OilHightLight 80
+#define OilLowLight 60
+#define HightLight 720
+#define LowLight 280
+
+
 #include "main.h"
+
+
 
 unsigned int Tiks=0;
 unsigned char Temp=20;//1 тик =  1 сек
@@ -12,9 +20,10 @@ void PortInit()
 		PORTD=0;
 		
 		DDRB = 0x38;
+		PORTB = 0x30;
 		
 		DDRC = 0x7;
-		PORTC = 0x0;
+		PORTC = 0x7;
 }
 
 char IsButtonPress(char PinCondition)
@@ -31,10 +40,12 @@ char IsButtonPress(char PinCondition)
 	
 void IsCalibrate()
 {	
+
 	char IsLeft = true,IsVisible = true;
 	char* First = "Calibrate sens?";
 	LCDClear();
 	ADCInit();
+	
 	SendStr(First);
 	while(1)
 	{
@@ -95,108 +106,115 @@ void IsCalibrate()
 	}
 }
 
-void UpWaterLevel()
+void DisplayCalibRes(int one,int two,int three)
 {
-	_delay_ms(500);
-	char  IsFirst = 1;
-	LCDClear();
-	SendStr("Press OK then");
-	setpos(0,1);
-	SendStr("wat lv above h2");
-	InitPWM();
-	StartPWM(Frequency);
-	PORTC |= 0x1;
-	while(!IsButtonPress(PINB & 0x1))
-	{	
-		if (IsFirst == 1)
-		{
-			PORTC &= 0x248;
-			PORTC |= 0x4;
-			IsFirst = 0;
-		}
-		else if ( IsFirst == 0)
-		{
-			PORTC &= 0x248;
-			PORTC |= 0x1;
-			IsFirst = 1;
-		}
-		_delay_ms(T1S);
-	}
-	PORTC &= 0x248;
-	StopPWM();
+	sendchar(one/1000+0x30);
+	sendchar((one%1000)/100+0x30);
+	sendchar((one%100)/10+0x30);
+	sendchar(one%10+0x30);
+	sendchar(' ');
+	sendchar(two/1000+0x30);
+	sendchar((two%1000)/100+0x30);
+	sendchar((two%100)/10+0x30);
+	sendchar(two%10+0x30);
+	sendchar(' ');
+	sendchar(three/1000+0x30);
+	sendchar((three%1000)/100+0x30);
+	sendchar((three%100)/10+0x30);
+	sendchar(three%10+0x30);
 }
 
 void CalibrateSens()
 {   
-	UpWaterLevel();
-	unsigned int Summ=0,buf,Dark=0,WaterLight=0,Light=0;
+	PORTB |=0x30;
+	unsigned int Summ=0, Summ1=0,buf,Dark1=0,WaterLight1=0,Light1=0,Dark=0,WaterLight=0,Light=0;
+	char IsWaterLvl = false, IsWaterLvl1 = false;//пересёк ли первый уровень и  2 уровни
 	for(char i = 0;i<100;i++)
 	{
-		buf = ADCConvert(0x5);
-		Summ+=buf;
-		_delay_ms(T0001S*3);
+		Summ += ADCConvert(0x4);
+		_delay_ms(2);
+		Summ1 += ADCConvert(0x5);
 	}
 	Dark = Summ/100;
-	PORTB |= 0x20;
-	Summ = 0; 
+	Dark1 = Summ1/100;
+	PORTB &= 0xCF;
+	Summ = 0;
+	Summ1 = 0;
 	for(char i = 0;i<100;i++)
 	{
-		buf = ADCConvert(0x5);
-		Summ+=buf;
-		_delay_ms(T0001S*3);
+		Summ += ADCConvert(0x4);
+		_delay_ms(2);
+		Summ1 += ADCConvert(0x5);
 	}
 	Light = Summ/100;
+	Light1 = Summ1/100;
 	
-	PORTB &=0xDF;
-	PORTB |= 0x10;
+	LCDClear();
+	DisplayCalibRes(Dark,Light,0);
+	setpos(0,1);
+	DisplayCalibRes(Dark1,Light1,0);
 	
-	Summ = 0;	
-	for(char i = 0;i<100;i++)
+	
+	PORTB &= 0xFC;
+	
+	while (1)
 	{
-		buf = ADCConvert(0x4);
-		Summ += buf;
-		_delay_ms(T0001S*3);
+		if((char)IsSame(ADCConvert(0x4),Light,(int)Light/5) == false && !IsWaterLvl)
+		{
+			IsWaterLvl = true;
+			Summ=0;
+			for(char i = 0;i<100;i++)
+			{
+				Summ += ADCConvert(0x4);
+				_delay_ms(T001S*3);
+			}
+			WaterLight = Summ/100;
+		}
+		if((char)IsSame(ADCConvert(0x5),Light1,(int)Light1/5) == false && !IsWaterLvl1)
+		{
+			IsWaterLvl1 = true;
+			Summ=0;
+			for(char i = 0;i<100;i++)
+			{
+				Summ += ADCConvert(0x5);
+				_delay_ms(T001S*3);
+			}
+			WaterLight1 = Summ/100;
+			
+			
+			PORTC |= 0x3;
+			break;
+		}
+		_delay_ms(10);
 	}
-	WaterLight = Summ/100;
-	PORTB &=0xEF;
 		
 	WriteEEPROMInt(0,Dark);
 	WriteEEPROMInt(2,Light);
-	WriteEEPROMInt(4,WaterLight);	
+	WriteEEPROMInt(4,WaterLight);
 	
-	unsigned int adc_value = Dark;
+	WriteEEPROMInt(6,Dark1);
+	WriteEEPROMInt(8,Light1);
+	WriteEEPROMInt(10,WaterLight1);
+	
 	
 	LCDClear();
-	SendStr("Testing result:");
+	DisplayCalibRes(Dark,Light,WaterLight);
 	setpos(0,1);
-	sendchar(adc_value/1000+0x30);
-	sendchar((adc_value%1000)/100+0x30);
-	sendchar((adc_value%100)/10+0x30);
-	sendchar(adc_value%10+0x30);
-	sendchar(' ');
-	adc_value = Light;
-	sendchar(adc_value/1000+0x30);
-	sendchar((adc_value%1000)/100+0x30);
-	sendchar((adc_value%100)/10+0x30);
-	sendchar(adc_value%10+0x30);
-	sendchar(' ');
-	adc_value = WaterLight;
-	sendchar(adc_value/1000+0x30);
-	sendchar((adc_value%1000)/100+0x30);
-	sendchar((adc_value%100)/10+0x30);
-	sendchar(adc_value%10+0x30);
-	_delay_ms(5*1000);
+	DisplayCalibRes(Dark1,Light1,WaterLight1);
+	
+	_delay_ms(5*T1S);
+	
 }
 
-char IsSame(int One,int Two,int Part)
+int IsSame(int One,int Two,int Part)
 {
 	if(One >= Two - Part && One <= Two + Part)
 	{
-		return true;
+		return 0x1;
 	}
 	else 
 	{
-		return false;
+		return 0x0;
 	}
 }
 
@@ -276,7 +294,7 @@ void ChooseFrequency()
 		}
 		else if (IsButtonPress(PINB & 0x4))
 		{
-			if (Frequency > 32)
+			if (Frequency > 70)
 			{
 				Frequency--;
 				setpos(0,1);
@@ -340,7 +358,7 @@ void ChooseTemp()
 void Testing()
 {
 	unsigned int Dark=0,WaterLight=0,Light=0;
-	
+	ADCInit();
 	Dark = ReadEEPROMInt(0);
 	Light = ReadEEPROMInt(2);
 	WaterLight = ReadEEPROMInt(4);
@@ -358,11 +376,11 @@ void Testing()
 	StartPWM(Frequency);
 	while(1)
 	{
-		if(Stage == 1 && IsSame(ADCConvert(0x5),WaterLight,50))
+		if(Stage == 1 && ADCConvert(0x5) >=50 && ADCConvert(0x5) <=70)
 		{
 			PORTC &= 0xF8;
 			PORTC |= 0x2;
-			StartTimer();///Разница команд от5* 10^-5 до 10^-3
+			StartTimer();
 			Stage = 2;
 			LCDClear();
 			SendStr(Test2);
@@ -370,7 +388,7 @@ void Testing()
 			SendStr(Test22);
 			
 		}	
-		else if(Stage == 2 && IsSame(ADCConvert(0x4),Light,50))
+		else if(Stage == 2 &&  ADCConvert(0x4) >=650 && ADCConvert(0x4) <=850)
 		{
 			StopTimer();
 			ElapsedTime = GetTime();
@@ -379,23 +397,6 @@ void Testing()
 			CountResault();
 			return;
 		}
-		/*if (Stage == 1)
-		{
-			if (IsFirst == 1)
-			{
-				PORTC &= 0x248;
-				PORTC |= 0x4;
-				IsFirst = 0;
-			}
-			else if ( IsFirst == 0)
-			{
-				PORTC &= 0x248;
-				PORTC |= 0x1;
-				IsFirst = 1;
-			}
-			_delay_ms(T1S);
-		}*/
-		_delay_ms(1000);
 		
 		if(Stage == 1)
 		{
@@ -405,6 +406,15 @@ void Testing()
 		sendchar((buf%1000)/100+0x30);
 		sendchar((buf%100)/10+0x30);
 		sendchar(buf%10+0x30);
+		}
+		if(Stage == 2)
+		{
+			LCDClear();
+			unsigned int buf = ADCConvert(0x4);
+			sendchar(buf/1000+0x30);
+			sendchar((buf%1000)/100+0x30);
+			sendchar((buf%100)/10+0x30);
+			sendchar(buf%10+0x30);
 		}
 	}
 	
@@ -437,33 +447,20 @@ void WriteFloat(float D,char NumAfterDot)
 }
 
 int main(void)
-{	
-	char*  Result1 = "M:",Result2 = "V:";   
+{	 
 	sei();
 	PortInit();                                                    
 	LCDInit();
-	/*InitPWM();
-	StartPWM(35);
-	TimerInit();
-	_delay_ms(5000);
-	SendStr("Timer is start");
-	StartTimer();
-	while(!IsButtonPress(PINB & 0x1)){
-	}
-	LCDClear();
-	StopTimer();
-	ElapsedTime = GetTime();
-	WriteFloat(ElapsedTime,4);
-	*/
 	 while (1) 
     {
+		
 		IsCalibrate();
 		ChooseFrequency();
 		ChooseTemp();
 		Testing();
 		
 		LCDClear();
-		SendStr(Result1);
+		SendStr("M:");
 		WriteFloat(MassD,6);
 		SendStr("[kg/s]");
 		SendStr("Set Hz:");
@@ -473,7 +470,7 @@ int main(void)
 		sendchar(Frequency%10+0x30);
 		
 		setpos(0,1);
-		SendStr(Result2);
+		SendStr("V:");
 		WriteFloat(VD,6);
 		SendStr("[m3/s]");
 		SendStr("El t:");

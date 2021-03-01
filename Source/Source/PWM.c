@@ -9,6 +9,7 @@ void InitPWM()
 }
 void StartPWM(unsigned int Frequency)
 {
+	Frequency*=2;
 	unsigned int Del;
 	char Bits;
 	if(Frequency < 125)
@@ -31,7 +32,7 @@ void StartPWM(unsigned int Frequency)
 		Del = 64;
 		Bits = 0x4;
 	}
-	else if(Frequency < 1000)
+	else if(Frequency < 2000)
 	{
 		Del = 32;
 		Bits = 0x3;

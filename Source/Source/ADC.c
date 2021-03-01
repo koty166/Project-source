@@ -7,6 +7,7 @@ void ADCInit()
 }
 unsigned int ADCConvert(char Port)
 {
+	_delay_ms(2);
 	ADMUX &= 0XF8;
 	ADMUX |= Port;
 	ADCSRA |=(1<<ADSC);

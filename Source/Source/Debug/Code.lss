@@ -1,0 +1,704 @@
+
+Code.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000003d2  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         0000006c  00800060  000003d2  00000466  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000002  008000cc  008000cc  000004d2  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  000004d2  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000504  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000118  00000000  00000000  00000540  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   000020dc  00000000  00000000  00000658  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 00000a68  00000000  00000000  00002734  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   00000e7e  00000000  00000000  0000319c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  00000398  00000000  00000000  0000401c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    00000553  00000000  00000000  000043b4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    00001619  00000000  00000000  00004907  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000150  00000000  00000000  00005f20  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	2c c0       	rjmp	.+88     	; 0x5c <__bad_interrupt>
+   4:	2b c0       	rjmp	.+86     	; 0x5c <__bad_interrupt>
+   6:	2a c0       	rjmp	.+84     	; 0x5c <__bad_interrupt>
+   8:	29 c0       	rjmp	.+82     	; 0x5c <__bad_interrupt>
+   a:	28 c0       	rjmp	.+80     	; 0x5c <__bad_interrupt>
+   c:	c6 c0       	rjmp	.+396    	; 0x19a <__vector_6>
+   e:	26 c0       	rjmp	.+76     	; 0x5c <__bad_interrupt>
+  10:	25 c0       	rjmp	.+74     	; 0x5c <__bad_interrupt>
+  12:	24 c0       	rjmp	.+72     	; 0x5c <__bad_interrupt>
+  14:	23 c0       	rjmp	.+70     	; 0x5c <__bad_interrupt>
+  16:	22 c0       	rjmp	.+68     	; 0x5c <__bad_interrupt>
+  18:	21 c0       	rjmp	.+66     	; 0x5c <__bad_interrupt>
+  1a:	20 c0       	rjmp	.+64     	; 0x5c <__bad_interrupt>
+  1c:	1f c0       	rjmp	.+62     	; 0x5c <__bad_interrupt>
+  1e:	1e c0       	rjmp	.+60     	; 0x5c <__bad_interrupt>
+  20:	1d c0       	rjmp	.+58     	; 0x5c <__bad_interrupt>
+  22:	1c c0       	rjmp	.+56     	; 0x5c <__bad_interrupt>
+  24:	1b c0       	rjmp	.+54     	; 0x5c <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf e5       	ldi	r28, 0x5F	; 95
+  2c:	d4 e0       	ldi	r29, 0x04	; 4
+  2e:	de bf       	out	0x3e, r29	; 62
+  30:	cd bf       	out	0x3d, r28	; 61
+
+00000032 <__do_copy_data>:
+  32:	10 e0       	ldi	r17, 0x00	; 0
+  34:	a0 e6       	ldi	r26, 0x60	; 96
+  36:	b0 e0       	ldi	r27, 0x00	; 0
+  38:	e2 ed       	ldi	r30, 0xD2	; 210
+  3a:	f3 e0       	ldi	r31, 0x03	; 3
+  3c:	02 c0       	rjmp	.+4      	; 0x42 <__SREG__+0x3>
+  3e:	05 90       	lpm	r0, Z+
+  40:	0d 92       	st	X+, r0
+  42:	ac 3c       	cpi	r26, 0xCC	; 204
+  44:	b1 07       	cpc	r27, r17
+  46:	d9 f7       	brne	.-10     	; 0x3e <__SP_H__>
+
+00000048 <__do_clear_bss>:
+  48:	20 e0       	ldi	r18, 0x00	; 0
+  4a:	ac ec       	ldi	r26, 0xCC	; 204
+  4c:	b0 e0       	ldi	r27, 0x00	; 0
+  4e:	01 c0       	rjmp	.+2      	; 0x52 <.do_clear_bss_start>
+
+00000050 <.do_clear_bss_loop>:
+  50:	1d 92       	st	X+, r1
+
+00000052 <.do_clear_bss_start>:
+  52:	ae 3c       	cpi	r26, 0xCE	; 206
+  54:	b2 07       	cpc	r27, r18
+  56:	e1 f7       	brne	.-8      	; 0x50 <.do_clear_bss_loop>
+  58:	b9 d0       	rcall	.+370    	; 0x1cc <main>
+  5a:	b9 c1       	rjmp	.+882    	; 0x3ce <_exit>
+
+0000005c <__bad_interrupt>:
+  5c:	d1 cf       	rjmp	.-94     	; 0x0 <__vectors>
+
+0000005e <ADCInit>:
+﻿#include "ADC.h"
+
+void ADCInit()
+{
+	ADCSRA |= (1<<ADEN) |(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
+  5e:	86 b1       	in	r24, 0x06	; 6
+  60:	87 68       	ori	r24, 0x87	; 135
+  62:	86 b9       	out	0x06, r24	; 6
+	ADMUX |= (1<<REFS1)|(1<<REFS0);
+  64:	87 b1       	in	r24, 0x07	; 7
+  66:	80 6c       	ori	r24, 0xC0	; 192
+  68:	87 b9       	out	0x07, r24	; 7
+  6a:	08 95       	ret
+
+0000006c <ADCConvert>:
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  6c:	e3 ef       	ldi	r30, 0xF3	; 243
+  6e:	f1 e0       	ldi	r31, 0x01	; 1
+  70:	31 97       	sbiw	r30, 0x01	; 1
+  72:	f1 f7       	brne	.-4      	; 0x70 <ADCConvert+0x4>
+  74:	00 c0       	rjmp	.+0      	; 0x76 <ADCConvert+0xa>
+  76:	00 00       	nop
+}
+unsigned int ADCConvert(char Port)
+{
+	_delay_ms(2);
+	ADMUX &= 0XF8;
+  78:	97 b1       	in	r25, 0x07	; 7
+  7a:	98 7f       	andi	r25, 0xF8	; 248
+  7c:	97 b9       	out	0x07, r25	; 7
+	ADMUX |= Port;
+  7e:	97 b1       	in	r25, 0x07	; 7
+  80:	89 2b       	or	r24, r25
+  82:	87 b9       	out	0x07, r24	; 7
+	ADCSRA |=(1<<ADSC);
+  84:	36 9a       	sbi	0x06, 6	; 6
+	while(ADCSRA & (1<< ADSC))
+  86:	36 9b       	sbis	0x06, 6	; 6
+  88:	03 c0       	rjmp	.+6      	; 0x90 <ADCConvert+0x24>
+	return ADC;
+  8a:	84 b1       	in	r24, 0x04	; 4
+  8c:	95 b1       	in	r25, 0x05	; 5
+  8e:	08 95       	ret
+}
+  90:	08 95       	ret
+
+00000092 <sendhalfbyte>:
+﻿ #include "LCD.h"
+ void sendhalfbyte(unsigned char c)
+{
+	 PORTD|=0x80;
+  92:	97 9a       	sbi	0x12, 7	; 18
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  94:	9a e6       	ldi	r25, 0x6A	; 106
+  96:	9a 95       	dec	r25
+  98:	f1 f7       	brne	.-4      	; 0x96 <sendhalfbyte+0x4>
+  9a:	00 c0       	rjmp	.+0      	; 0x9c <sendhalfbyte+0xa>
+	 _delay_us(320);
+	 PORTD  &= 0xF0; 
+  9c:	92 b3       	in	r25, 0x12	; 18
+  9e:	90 7f       	andi	r25, 0xF0	; 240
+  a0:	92 bb       	out	0x12, r25	; 18
+	 PORTD |= c;
+  a2:	92 b3       	in	r25, 0x12	; 18
+  a4:	89 2b       	or	r24, r25
+  a6:	82 bb       	out	0x12, r24	; 18
+	 PORTD&=0x7F;
+  a8:	97 98       	cbi	0x12, 7	; 18
+  aa:	8a e6       	ldi	r24, 0x6A	; 106
+  ac:	8a 95       	dec	r24
+  ae:	f1 f7       	brne	.-4      	; 0xac <sendhalfbyte+0x1a>
+  b0:	00 c0       	rjmp	.+0      	; 0xb2 <sendhalfbyte+0x20>
+  b2:	08 95       	ret
+
+000000b4 <sendbyte>:
+	 _delay_us(320); 
+}
+ void sendbyte(unsigned char c, unsigned char IsData)
+{	
+  b4:	cf 93       	push	r28
+  b6:	c8 2f       	mov	r28, r24
+	if (IsData != 0) PORTD |=0x40;
+  b8:	66 23       	and	r22, r22
+  ba:	11 f0       	breq	.+4      	; 0xc0 <sendbyte+0xc>
+  bc:	96 9a       	sbi	0x12, 6	; 18
+  be:	01 c0       	rjmp	.+2      	; 0xc2 <sendbyte+0xe>
+	else PORTD &=0xBF;
+  c0:	96 98       	cbi	0x12, 6	; 18
+	
+	unsigned char hc=(c>>4)&0xF,lc = c&0xF;
+	sendhalfbyte(hc);
+  c2:	8c 2f       	mov	r24, r28
+  c4:	82 95       	swap	r24
+  c6:	8f 70       	andi	r24, 0x0F	; 15
+  c8:	e4 df       	rcall	.-56     	; 0x92 <sendhalfbyte>
+	sendhalfbyte(lc);
+  ca:	8c 2f       	mov	r24, r28
+  cc:	8f 70       	andi	r24, 0x0F	; 15
+  ce:	e1 df       	rcall	.-62     	; 0x92 <sendhalfbyte>
+}
+  d0:	cf 91       	pop	r28
+  d2:	08 95       	ret
+
+000000d4 <sendchar>:
+ void sendchar(unsigned char c)
+ {
+	 sendbyte(c,true);
+  d4:	61 e0       	ldi	r22, 0x01	; 1
+  d6:	ee df       	rcall	.-36     	; 0xb4 <sendbyte>
+  d8:	08 95       	ret
+
+000000da <LCDInit>:
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  da:	85 ea       	ldi	r24, 0xA5	; 165
+  dc:	9e e0       	ldi	r25, 0x0E	; 14
+  de:	01 97       	sbiw	r24, 0x01	; 1
+  e0:	f1 f7       	brne	.-4      	; 0xde <LCDInit+0x4>
+  e2:	00 c0       	rjmp	.+0      	; 0xe4 <LCDInit+0xa>
+  e4:	00 00       	nop
+ }
+ void LCDInit()
+ {	
+	 _delay_ms(15); sendhalfbyte(0x2);
+  e6:	82 e0       	ldi	r24, 0x02	; 2
+  e8:	d4 df       	rcall	.-88     	; 0x92 <sendhalfbyte>
+  ea:	87 ee       	ldi	r24, 0xE7	; 231
+  ec:	93 e0       	ldi	r25, 0x03	; 3
+  ee:	01 97       	sbiw	r24, 0x01	; 1
+  f0:	f1 f7       	brne	.-4      	; 0xee <LCDInit+0x14>
+  f2:	00 c0       	rjmp	.+0      	; 0xf4 <LCDInit+0x1a>
+  f4:	00 00       	nop
+	 _delay_ms(4); sendbyte(0x28, false);
+  f6:	60 e0       	ldi	r22, 0x00	; 0
+  f8:	88 e2       	ldi	r24, 0x28	; 40
+  fa:	dc df       	rcall	.-72     	; 0xb4 <sendbyte>
+  fc:	89 ef       	ldi	r24, 0xF9	; 249
+  fe:	90 e0       	ldi	r25, 0x00	; 0
+ 100:	01 97       	sbiw	r24, 0x01	; 1
+ 102:	f1 f7       	brne	.-4      	; 0x100 <LCDInit+0x26>
+ 104:	00 c0       	rjmp	.+0      	; 0x106 <LCDInit+0x2c>
+ 106:	00 00       	nop
+	 _delay_ms(1); sendbyte(0x6, false);
+ 108:	60 e0       	ldi	r22, 0x00	; 0
+ 10a:	86 e0       	ldi	r24, 0x06	; 6
+ 10c:	d3 df       	rcall	.-90     	; 0xb4 <sendbyte>
+ 10e:	89 ef       	ldi	r24, 0xF9	; 249
+ 110:	90 e0       	ldi	r25, 0x00	; 0
+ 112:	01 97       	sbiw	r24, 0x01	; 1
+ 114:	f1 f7       	brne	.-4      	; 0x112 <LCDInit+0x38>
+ 116:	00 c0       	rjmp	.+0      	; 0x118 <LCDInit+0x3e>
+ 118:	00 00       	nop
+	 _delay_ms(1); sendbyte(0xC, false);
+ 11a:	60 e0       	ldi	r22, 0x00	; 0
+ 11c:	8c e0       	ldi	r24, 0x0C	; 12
+ 11e:	ca df       	rcall	.-108    	; 0xb4 <sendbyte>
+ 120:	89 ef       	ldi	r24, 0xF9	; 249
+ 122:	90 e0       	ldi	r25, 0x00	; 0
+ 124:	01 97       	sbiw	r24, 0x01	; 1
+ 126:	f1 f7       	brne	.-4      	; 0x124 <LCDInit+0x4a>
+ 128:	00 c0       	rjmp	.+0      	; 0x12a <LCDInit+0x50>
+ 12a:	00 00       	nop
+ 12c:	08 95       	ret
+
+0000012e <SendStr>:
+	 _delay_ms(1);}
+ void SendStr(char Str[])
+ {	
+ 12e:	0f 93       	push	r16
+ 130:	1f 93       	push	r17
+ 132:	cf 93       	push	r28
+ 134:	fc 01       	movw	r30, r24
+	 for(char i=0;Str[i]!='\0';i++)
+ 136:	80 81       	ld	r24, Z
+ 138:	88 23       	and	r24, r24
+ 13a:	51 f0       	breq	.+20     	; 0x150 <SendStr+0x22>
+ 13c:	8f 01       	movw	r16, r30
+ 13e:	c0 e0       	ldi	r28, 0x00	; 0
+	{
+		sendchar(Str[i]);
+ 140:	c9 df       	rcall	.-110    	; 0xd4 <sendchar>
+	 _delay_ms(1); sendbyte(0x6, false);
+	 _delay_ms(1); sendbyte(0xC, false);
+	 _delay_ms(1);}
+ void SendStr(char Str[])
+ {	
+	 for(char i=0;Str[i]!='\0';i++)
+ 142:	cf 5f       	subi	r28, 0xFF	; 255
+ 144:	f8 01       	movw	r30, r16
+ 146:	ec 0f       	add	r30, r28
+ 148:	f1 1d       	adc	r31, r1
+ 14a:	80 81       	ld	r24, Z
+ 14c:	81 11       	cpse	r24, r1
+ 14e:	f8 cf       	rjmp	.-16     	; 0x140 <SendStr+0x12>
+	{
+		sendchar(Str[i]);
+	}
+}
+ 150:	cf 91       	pop	r28
+ 152:	1f 91       	pop	r17
+ 154:	0f 91       	pop	r16
+ 156:	08 95       	ret
+
+00000158 <setpos>:
+ void setpos(unsigned char x, unsigned y)
+ {
+char adress;
+
+  adress=(0x40*y+x)|0b10000000;
+  sendbyte(adress, 0); 
+ 158:	90 e4       	ldi	r25, 0x40	; 64
+ 15a:	69 9f       	mul	r22, r25
+ 15c:	80 0d       	add	r24, r0
+ 15e:	11 24       	eor	r1, r1
+ 160:	60 e0       	ldi	r22, 0x00	; 0
+ 162:	80 68       	ori	r24, 0x80	; 128
+ 164:	a7 df       	rcall	.-178    	; 0xb4 <sendbyte>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 166:	80 e1       	ldi	r24, 0x10	; 16
+ 168:	8a 95       	dec	r24
+ 16a:	f1 f7       	brne	.-4      	; 0x168 <setpos+0x10>
+ 16c:	00 c0       	rjmp	.+0      	; 0x16e <setpos+0x16>
+ 16e:	08 95       	ret
+
+00000170 <LCDClear>:
+  _delay_us(50);
+ }
+ void LCDClear()
+ {
+	 sendbyte(0x1,false);
+ 170:	60 e0       	ldi	r22, 0x00	; 0
+ 172:	81 e0       	ldi	r24, 0x01	; 1
+ 174:	9f df       	rcall	.-194    	; 0xb4 <sendbyte>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 176:	87 e8       	ldi	r24, 0x87	; 135
+ 178:	93 e1       	ldi	r25, 0x13	; 19
+ 17a:	01 97       	sbiw	r24, 0x01	; 1
+ 17c:	f1 f7       	brne	.-4      	; 0x17a <LCDClear+0xa>
+ 17e:	00 c0       	rjmp	.+0      	; 0x180 <LCDClear+0x10>
+ 180:	00 00       	nop
+ 182:	08 95       	ret
+
+00000184 <PortInit>:
+			sendchar('.');
+		}
+		sendchar(DataS[i]+0x30);
+	}
+	
+}
+ 184:	8f ef       	ldi	r24, 0xFF	; 255
+ 186:	81 bb       	out	0x11, r24	; 17
+ 188:	12 ba       	out	0x12, r1	; 18
+ 18a:	88 e3       	ldi	r24, 0x38	; 56
+ 18c:	87 bb       	out	0x17, r24	; 23
+ 18e:	80 e3       	ldi	r24, 0x30	; 48
+ 190:	88 bb       	out	0x18, r24	; 24
+ 192:	87 e0       	ldi	r24, 0x07	; 7
+ 194:	84 bb       	out	0x14, r24	; 20
+ 196:	85 bb       	out	0x15, r24	; 21
+ 198:	08 95       	ret
+
+0000019a <__vector_6>:
+ 19a:	1f 92       	push	r1
+ 19c:	0f 92       	push	r0
+ 19e:	0f b6       	in	r0, 0x3f	; 63
+ 1a0:	0f 92       	push	r0
+ 1a2:	11 24       	eor	r1, r1
+ 1a4:	8f 93       	push	r24
+ 1a6:	9f 93       	push	r25
+ 1a8:	80 91 cc 00 	lds	r24, 0x00CC	; 0x8000cc <__data_end>
+ 1ac:	90 91 cd 00 	lds	r25, 0x00CD	; 0x8000cd <__data_end+0x1>
+ 1b0:	01 96       	adiw	r24, 0x01	; 1
+ 1b2:	90 93 cd 00 	sts	0x00CD, r25	; 0x8000cd <__data_end+0x1>
+ 1b6:	80 93 cc 00 	sts	0x00CC, r24	; 0x8000cc <__data_end>
+ 1ba:	1d bc       	out	0x2d, r1	; 45
+ 1bc:	1c bc       	out	0x2c, r1	; 44
+ 1be:	9f 91       	pop	r25
+ 1c0:	8f 91       	pop	r24
+ 1c2:	0f 90       	pop	r0
+ 1c4:	0f be       	out	0x3f, r0	; 63
+ 1c6:	0f 90       	pop	r0
+ 1c8:	1f 90       	pop	r1
+ 1ca:	18 95       	reti
+
+000001cc <main>:
+
+int main(void)
+{	 
+	sei();
+ 1cc:	78 94       	sei
+	PortInit();                                                    
+ 1ce:	da df       	rcall	.-76     	; 0x184 <PortInit>
+	LCDInit();
+ 1d0:	84 df       	rcall	.-248    	; 0xda <LCDInit>
+	SendStr("awdawdaw");
+ 1d2:	82 ec       	ldi	r24, 0xC2	; 194
+ 1d4:	90 e0       	ldi	r25, 0x00	; 0
+ 1d6:	ab df       	rcall	.-170    	; 0x12e <SendStr>
+	ADCInit();
+ 1d8:	42 df       	rcall	.-380    	; 0x5e <ADCInit>
+ 1da:	2f ef       	ldi	r18, 0xFF	; 255
+ 1dc:	39 e6       	ldi	r19, 0x69	; 105
+ 1de:	88 e1       	ldi	r24, 0x18	; 24
+ 1e0:	21 50       	subi	r18, 0x01	; 1
+ 1e2:	30 40       	sbci	r19, 0x00	; 0
+ 1e4:	80 40       	sbci	r24, 0x00	; 0
+ 1e6:	e1 f7       	brne	.-8      	; 0x1e0 <main+0x14>
+ 1e8:	00 c0       	rjmp	.+0      	; 0x1ea <main+0x1e>
+ 1ea:	00 00       	nop
+				adc_value = ADCConvert(0x5);
+				
+			LCDClear();
+			setpos(0,1);
+			sendchar(adc_value/1000+0x30);
+			sendchar((adc_value%1000)/100+0x30);
+ 1ec:	08 ee       	ldi	r16, 0xE8	; 232
+ 1ee:	13 e0       	ldi	r17, 0x03	; 3
+			sendchar((adc_value%100)/10+0x30);
+ 1f0:	0f 2e       	mov	r0, r31
+ 1f2:	f4 e6       	ldi	r31, 0x64	; 100
+ 1f4:	ff 2e       	mov	r15, r31
+ 1f6:	f0 2d       	mov	r31, r0
+	_delay_ms(1000);
+	while(1)
+		{
+
+				unsigned int adc_value;
+				adc_value = ADCConvert(0x5);
+ 1f8:	85 e0       	ldi	r24, 0x05	; 5
+ 1fa:	38 df       	rcall	.-400    	; 0x6c <ADCConvert>
+ 1fc:	ec 01       	movw	r28, r24
+				
+			LCDClear();
+ 1fe:	b8 df       	rcall	.-144    	; 0x170 <LCDClear>
+			setpos(0,1);
+ 200:	61 e0       	ldi	r22, 0x01	; 1
+ 202:	70 e0       	ldi	r23, 0x00	; 0
+ 204:	80 e0       	ldi	r24, 0x00	; 0
+ 206:	a8 df       	rcall	.-176    	; 0x158 <setpos>
+			sendchar(adc_value/1000+0x30);
+ 208:	9e 01       	movw	r18, r28
+ 20a:	36 95       	lsr	r19
+ 20c:	27 95       	ror	r18
+ 20e:	36 95       	lsr	r19
+ 210:	27 95       	ror	r18
+ 212:	36 95       	lsr	r19
+ 214:	27 95       	ror	r18
+ 216:	a5 ec       	ldi	r26, 0xC5	; 197
+ 218:	b0 e2       	ldi	r27, 0x20	; 32
+ 21a:	cd d0       	rcall	.+410    	; 0x3b6 <__umulhisi3>
+ 21c:	6c 01       	movw	r12, r24
+ 21e:	d6 94       	lsr	r13
+ 220:	c7 94       	ror	r12
+ 222:	d6 94       	lsr	r13
+ 224:	c7 94       	ror	r12
+ 226:	d6 94       	lsr	r13
+ 228:	c7 94       	ror	r12
+ 22a:	d6 94       	lsr	r13
+ 22c:	c7 94       	ror	r12
+ 22e:	80 e3       	ldi	r24, 0x30	; 48
+ 230:	8c 0d       	add	r24, r12
+ 232:	50 df       	rcall	.-352    	; 0xd4 <sendchar>
+			sendchar((adc_value%1000)/100+0x30);
+ 234:	c0 9e       	mul	r12, r16
+ 236:	c0 01       	movw	r24, r0
+ 238:	c1 9e       	mul	r12, r17
+ 23a:	90 0d       	add	r25, r0
+ 23c:	d0 9e       	mul	r13, r16
+ 23e:	90 0d       	add	r25, r0
+ 240:	11 24       	eor	r1, r1
+ 242:	9e 01       	movw	r18, r28
+ 244:	28 1b       	sub	r18, r24
+ 246:	39 0b       	sbc	r19, r25
+ 248:	36 95       	lsr	r19
+ 24a:	27 95       	ror	r18
+ 24c:	36 95       	lsr	r19
+ 24e:	27 95       	ror	r18
+ 250:	ab e7       	ldi	r26, 0x7B	; 123
+ 252:	b4 e1       	ldi	r27, 0x14	; 20
+ 254:	b0 d0       	rcall	.+352    	; 0x3b6 <__umulhisi3>
+ 256:	96 95       	lsr	r25
+ 258:	87 95       	ror	r24
+ 25a:	80 5d       	subi	r24, 0xD0	; 208
+ 25c:	3b df       	rcall	.-394    	; 0xd4 <sendchar>
+			sendchar((adc_value%100)/10+0x30);
+ 25e:	9e 01       	movw	r18, r28
+ 260:	36 95       	lsr	r19
+ 262:	27 95       	ror	r18
+ 264:	36 95       	lsr	r19
+ 266:	27 95       	ror	r18
+ 268:	ab e7       	ldi	r26, 0x7B	; 123
+ 26a:	b4 e1       	ldi	r27, 0x14	; 20
+ 26c:	a4 d0       	rcall	.+328    	; 0x3b6 <__umulhisi3>
+ 26e:	96 95       	lsr	r25
+ 270:	87 95       	ror	r24
+ 272:	f8 9e       	mul	r15, r24
+ 274:	90 01       	movw	r18, r0
+ 276:	f9 9e       	mul	r15, r25
+ 278:	30 0d       	add	r19, r0
+ 27a:	11 24       	eor	r1, r1
+ 27c:	ce 01       	movw	r24, r28
+ 27e:	82 1b       	sub	r24, r18
+ 280:	93 0b       	sbc	r25, r19
+ 282:	9c 01       	movw	r18, r24
+ 284:	ad ec       	ldi	r26, 0xCD	; 205
+ 286:	bc ec       	ldi	r27, 0xCC	; 204
+ 288:	96 d0       	rcall	.+300    	; 0x3b6 <__umulhisi3>
+ 28a:	96 95       	lsr	r25
+ 28c:	87 95       	ror	r24
+ 28e:	96 95       	lsr	r25
+ 290:	87 95       	ror	r24
+ 292:	96 95       	lsr	r25
+ 294:	87 95       	ror	r24
+ 296:	80 5d       	subi	r24, 0xD0	; 208
+ 298:	1d df       	rcall	.-454    	; 0xd4 <sendchar>
+			sendchar(adc_value%10+0x30);
+ 29a:	9e 01       	movw	r18, r28
+ 29c:	ad ec       	ldi	r26, 0xCD	; 205
+ 29e:	bc ec       	ldi	r27, 0xCC	; 204
+ 2a0:	8a d0       	rcall	.+276    	; 0x3b6 <__umulhisi3>
+ 2a2:	96 95       	lsr	r25
+ 2a4:	87 95       	ror	r24
+ 2a6:	96 95       	lsr	r25
+ 2a8:	87 95       	ror	r24
+ 2aa:	96 95       	lsr	r25
+ 2ac:	87 95       	ror	r24
+ 2ae:	9c 01       	movw	r18, r24
+ 2b0:	22 0f       	add	r18, r18
+ 2b2:	33 1f       	adc	r19, r19
+ 2b4:	88 0f       	add	r24, r24
+ 2b6:	99 1f       	adc	r25, r25
+ 2b8:	88 0f       	add	r24, r24
+ 2ba:	99 1f       	adc	r25, r25
+ 2bc:	88 0f       	add	r24, r24
+ 2be:	99 1f       	adc	r25, r25
+ 2c0:	82 0f       	add	r24, r18
+ 2c2:	93 1f       	adc	r25, r19
+ 2c4:	9e 01       	movw	r18, r28
+ 2c6:	28 1b       	sub	r18, r24
+ 2c8:	39 0b       	sbc	r19, r25
+ 2ca:	c9 01       	movw	r24, r18
+ 2cc:	80 5d       	subi	r24, 0xD0	; 208
+ 2ce:	02 df       	rcall	.-508    	; 0xd4 <sendchar>
+			sendchar(' ');
+ 2d0:	80 e2       	ldi	r24, 0x20	; 32
+ 2d2:	00 df       	rcall	.-512    	; 0xd4 <sendchar>
+			adc_value = ADCConvert(0x4);
+ 2d4:	84 e0       	ldi	r24, 0x04	; 4
+ 2d6:	ca de       	rcall	.-620    	; 0x6c <ADCConvert>
+ 2d8:	ec 01       	movw	r28, r24
+			sendchar(adc_value/1000+0x30);
+ 2da:	9c 01       	movw	r18, r24
+ 2dc:	36 95       	lsr	r19
+ 2de:	27 95       	ror	r18
+ 2e0:	36 95       	lsr	r19
+ 2e2:	27 95       	ror	r18
+ 2e4:	36 95       	lsr	r19
+ 2e6:	27 95       	ror	r18
+ 2e8:	a5 ec       	ldi	r26, 0xC5	; 197
+ 2ea:	b0 e2       	ldi	r27, 0x20	; 32
+ 2ec:	64 d0       	rcall	.+200    	; 0x3b6 <__umulhisi3>
+ 2ee:	6c 01       	movw	r12, r24
+ 2f0:	d6 94       	lsr	r13
+ 2f2:	c7 94       	ror	r12
+ 2f4:	d6 94       	lsr	r13
+ 2f6:	c7 94       	ror	r12
+ 2f8:	d6 94       	lsr	r13
+ 2fa:	c7 94       	ror	r12
+ 2fc:	d6 94       	lsr	r13
+ 2fe:	c7 94       	ror	r12
+ 300:	80 e3       	ldi	r24, 0x30	; 48
+ 302:	8c 0d       	add	r24, r12
+ 304:	e7 de       	rcall	.-562    	; 0xd4 <sendchar>
+			sendchar((adc_value%1000)/100+0x30);
+ 306:	c0 9e       	mul	r12, r16
+ 308:	c0 01       	movw	r24, r0
+ 30a:	c1 9e       	mul	r12, r17
+ 30c:	90 0d       	add	r25, r0
+ 30e:	d0 9e       	mul	r13, r16
+ 310:	90 0d       	add	r25, r0
+ 312:	11 24       	eor	r1, r1
+ 314:	9e 01       	movw	r18, r28
+ 316:	28 1b       	sub	r18, r24
+ 318:	39 0b       	sbc	r19, r25
+ 31a:	36 95       	lsr	r19
+ 31c:	27 95       	ror	r18
+ 31e:	36 95       	lsr	r19
+ 320:	27 95       	ror	r18
+ 322:	ab e7       	ldi	r26, 0x7B	; 123
+ 324:	b4 e1       	ldi	r27, 0x14	; 20
+ 326:	47 d0       	rcall	.+142    	; 0x3b6 <__umulhisi3>
+ 328:	96 95       	lsr	r25
+ 32a:	87 95       	ror	r24
+ 32c:	80 5d       	subi	r24, 0xD0	; 208
+ 32e:	d2 de       	rcall	.-604    	; 0xd4 <sendchar>
+			sendchar((adc_value%100)/10+0x30);
+ 330:	9e 01       	movw	r18, r28
+ 332:	36 95       	lsr	r19
+ 334:	27 95       	ror	r18
+ 336:	36 95       	lsr	r19
+ 338:	27 95       	ror	r18
+ 33a:	ab e7       	ldi	r26, 0x7B	; 123
+ 33c:	b4 e1       	ldi	r27, 0x14	; 20
+ 33e:	3b d0       	rcall	.+118    	; 0x3b6 <__umulhisi3>
+ 340:	96 95       	lsr	r25
+ 342:	87 95       	ror	r24
+ 344:	f8 9e       	mul	r15, r24
+ 346:	90 01       	movw	r18, r0
+ 348:	f9 9e       	mul	r15, r25
+ 34a:	30 0d       	add	r19, r0
+ 34c:	11 24       	eor	r1, r1
+ 34e:	ce 01       	movw	r24, r28
+ 350:	82 1b       	sub	r24, r18
+ 352:	93 0b       	sbc	r25, r19
+ 354:	9c 01       	movw	r18, r24
+ 356:	ad ec       	ldi	r26, 0xCD	; 205
+ 358:	bc ec       	ldi	r27, 0xCC	; 204
+ 35a:	2d d0       	rcall	.+90     	; 0x3b6 <__umulhisi3>
+ 35c:	96 95       	lsr	r25
+ 35e:	87 95       	ror	r24
+ 360:	96 95       	lsr	r25
+ 362:	87 95       	ror	r24
+ 364:	96 95       	lsr	r25
+ 366:	87 95       	ror	r24
+ 368:	80 5d       	subi	r24, 0xD0	; 208
+ 36a:	b4 de       	rcall	.-664    	; 0xd4 <sendchar>
+			sendchar(adc_value%10+0x30);
+ 36c:	9e 01       	movw	r18, r28
+ 36e:	ad ec       	ldi	r26, 0xCD	; 205
+ 370:	bc ec       	ldi	r27, 0xCC	; 204
+ 372:	21 d0       	rcall	.+66     	; 0x3b6 <__umulhisi3>
+ 374:	96 95       	lsr	r25
+ 376:	87 95       	ror	r24
+ 378:	96 95       	lsr	r25
+ 37a:	87 95       	ror	r24
+ 37c:	96 95       	lsr	r25
+ 37e:	87 95       	ror	r24
+ 380:	9c 01       	movw	r18, r24
+ 382:	22 0f       	add	r18, r18
+ 384:	33 1f       	adc	r19, r19
+ 386:	88 0f       	add	r24, r24
+ 388:	99 1f       	adc	r25, r25
+ 38a:	88 0f       	add	r24, r24
+ 38c:	99 1f       	adc	r25, r25
+ 38e:	88 0f       	add	r24, r24
+ 390:	99 1f       	adc	r25, r25
+ 392:	82 0f       	add	r24, r18
+ 394:	93 1f       	adc	r25, r19
+ 396:	9e 01       	movw	r18, r28
+ 398:	28 1b       	sub	r18, r24
+ 39a:	39 0b       	sbc	r19, r25
+ 39c:	c9 01       	movw	r24, r18
+ 39e:	80 5d       	subi	r24, 0xD0	; 208
+ 3a0:	99 de       	rcall	.-718    	; 0xd4 <sendchar>
+ 3a2:	3f ef       	ldi	r19, 0xFF	; 255
+ 3a4:	89 e6       	ldi	r24, 0x69	; 105
+ 3a6:	98 e1       	ldi	r25, 0x18	; 24
+ 3a8:	31 50       	subi	r19, 0x01	; 1
+ 3aa:	80 40       	sbci	r24, 0x00	; 0
+ 3ac:	90 40       	sbci	r25, 0x00	; 0
+ 3ae:	e1 f7       	brne	.-8      	; 0x3a8 <main+0x1dc>
+ 3b0:	00 c0       	rjmp	.+0      	; 0x3b2 <main+0x1e6>
+ 3b2:	00 00       	nop
+ 3b4:	21 cf       	rjmp	.-446    	; 0x1f8 <main+0x2c>
+
+000003b6 <__umulhisi3>:
+ 3b6:	a2 9f       	mul	r26, r18
+ 3b8:	b0 01       	movw	r22, r0
+ 3ba:	b3 9f       	mul	r27, r19
+ 3bc:	c0 01       	movw	r24, r0
+ 3be:	a3 9f       	mul	r26, r19
+ 3c0:	01 d0       	rcall	.+2      	; 0x3c4 <__umulhisi3+0xe>
+ 3c2:	b2 9f       	mul	r27, r18
+ 3c4:	70 0d       	add	r23, r0
+ 3c6:	81 1d       	adc	r24, r1
+ 3c8:	11 24       	eor	r1, r1
+ 3ca:	91 1d       	adc	r25, r1
+ 3cc:	08 95       	ret
+
+000003ce <_exit>:
+ 3ce:	f8 94       	cli
+
+000003d0 <__stop_program>:
+ 3d0:	ff cf       	rjmp	.-2      	; 0x3d0 <__stop_program>

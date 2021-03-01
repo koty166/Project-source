@@ -46,5 +46,5 @@ char adress;
  void LCDClear()
  {
 	 sendbyte(0x1,false);
-	 _delay_ms(2);
+	 _delay_ms(20);
  }
