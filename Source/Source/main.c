@@ -1,15 +1,14 @@
-#define OilHightLight 80
-#define OilLowLight 60
-#define HightLight 720
-#define LowLight 280
+#define OilHightMax 70
+#define OilHightMin 50
+#define LightLowMax 850
+#define LightLowMax 650
 
 
 #include "main.h"
 
-
-
-unsigned int Tiks=0;
-unsigned char Temp=20;//1 тик =  1 сек
+const float R = 0.05, h1 = 0.1, h2 = 0.2;
+unsigned int Tiks=0;//1 тик =  1 сек
+unsigned char Temp=20;
 unsigned int Frequency = 200;
 float MassD,VD,ElapsedTime;// Массовый и объёмный расходы
 
@@ -17,7 +16,6 @@ float MassD,VD,ElapsedTime;// Массовый и объёмный расходы
 void PortInit()
 {
 		DDRD=0xFF;
-		PORTD=0;
 		
 		DDRB = 0x38;
 		PORTB = 0x30;
@@ -38,186 +36,6 @@ char IsButtonPress(char PinCondition)
 	}
 }
 	
-void IsCalibrate()
-{	
-
-	char IsLeft = true,IsVisible = true;
-	char* First = "Calibrate sens?";
-	LCDClear();
-	ADCInit();
-	
-	SendStr(First);
-	while(1)
-	{
-		if(IsButtonPress(PINB & 0x1))
-		{
-			if (IsLeft == 0)
-			{
-				LCDClear();
-				SendStr("Calibrating...");
-				CalibrateSens();
-			}
-			_delay_ms(500);
-			return;
-		}
-		else if(IsButtonPress(PINB & 0x2))
-		{
-			IsLeft = false;
-		}
-		else if (IsButtonPress(PINB & 0x4))
-		{
-			IsLeft = true;
-		}
-		setpos(0,1);
-		if(IsLeft)
-		{
-			if (IsVisible)
-			{
-				SendStr("No");
-				setpos(5,1);
-				SendStr("Yes");
-				IsVisible = false;
-			}
-			else
-			{
-				SendStr("  ");
-				setpos(5,1);
-				SendStr("Yes");
-				IsVisible = true;
-			}
-		}
-		else
-		{
-			SendStr("No");
-			if (IsVisible)
-			{
-				setpos(5,1);
-				SendStr("Yes");
-				IsVisible = false;
-			}
-			else
-			{
-				setpos(5,1);
-				SendStr("   ");
-				IsVisible = true;
-			}
-		}
-		_delay_ms(500);
-	}
-}
-
-void DisplayCalibRes(int one,int two,int three)
-{
-	sendchar(one/1000+0x30);
-	sendchar((one%1000)/100+0x30);
-	sendchar((one%100)/10+0x30);
-	sendchar(one%10+0x30);
-	sendchar(' ');
-	sendchar(two/1000+0x30);
-	sendchar((two%1000)/100+0x30);
-	sendchar((two%100)/10+0x30);
-	sendchar(two%10+0x30);
-	sendchar(' ');
-	sendchar(three/1000+0x30);
-	sendchar((three%1000)/100+0x30);
-	sendchar((three%100)/10+0x30);
-	sendchar(three%10+0x30);
-}
-
-void CalibrateSens()
-{   
-	PORTB |=0x30;
-	unsigned int Summ=0, Summ1=0,buf,Dark1=0,WaterLight1=0,Light1=0,Dark=0,WaterLight=0,Light=0;
-	char IsWaterLvl = false, IsWaterLvl1 = false;//пересёк ли первый уровень и  2 уровни
-	for(char i = 0;i<100;i++)
-	{
-		Summ += ADCConvert(0x4);
-		_delay_ms(2);
-		Summ1 += ADCConvert(0x5);
-	}
-	Dark = Summ/100;
-	Dark1 = Summ1/100;
-	PORTB &= 0xCF;
-	Summ = 0;
-	Summ1 = 0;
-	for(char i = 0;i<100;i++)
-	{
-		Summ += ADCConvert(0x4);
-		_delay_ms(2);
-		Summ1 += ADCConvert(0x5);
-	}
-	Light = Summ/100;
-	Light1 = Summ1/100;
-	
-	LCDClear();
-	DisplayCalibRes(Dark,Light,0);
-	setpos(0,1);
-	DisplayCalibRes(Dark1,Light1,0);
-	
-	
-	PORTB &= 0xFC;
-	
-	while (1)
-	{
-		if((char)IsSame(ADCConvert(0x4),Light,(int)Light/5) == false && !IsWaterLvl)
-		{
-			IsWaterLvl = true;
-			Summ=0;
-			for(char i = 0;i<100;i++)
-			{
-				Summ += ADCConvert(0x4);
-				_delay_ms(T001S*3);
-			}
-			WaterLight = Summ/100;
-		}
-		if((char)IsSame(ADCConvert(0x5),Light1,(int)Light1/5) == false && !IsWaterLvl1)
-		{
-			IsWaterLvl1 = true;
-			Summ=0;
-			for(char i = 0;i<100;i++)
-			{
-				Summ += ADCConvert(0x5);
-				_delay_ms(T001S*3);
-			}
-			WaterLight1 = Summ/100;
-			
-			
-			PORTC |= 0x3;
-			break;
-		}
-		_delay_ms(10);
-	}
-		
-	WriteEEPROMInt(0,Dark);
-	WriteEEPROMInt(2,Light);
-	WriteEEPROMInt(4,WaterLight);
-	
-	WriteEEPROMInt(6,Dark1);
-	WriteEEPROMInt(8,Light1);
-	WriteEEPROMInt(10,WaterLight1);
-	
-	
-	LCDClear();
-	DisplayCalibRes(Dark,Light,WaterLight);
-	setpos(0,1);
-	DisplayCalibRes(Dark1,Light1,WaterLight1);
-	
-	_delay_ms(5*T1S);
-	
-}
-
-int IsSame(int One,int Two,int Part)
-{
-	if(One >= Two - Part && One <= Two + Part)
-	{
-		return 0x1;
-	}
-	else 
-	{
-		return 0x0;
-	}
-}
-
 void TimerInit()
 {
 	TCCR1B |=(1<<WGM12);
@@ -254,8 +72,8 @@ void StopTimer()
 void CountResault()
 {
 	const long PA = 101325;
-	const float V1 = 3.1415926535 * 0.1 * 0.05*0.05,V2 =3.1415926535 * 0.2 * 0.05*0.05,//h*pi*r*r; V2> V1
-	h1 = 0.1, h2=0.2,R = 8.3144626181, Mr = 28.98,Temperature = Temp+273;
+	const float V1 = 3.1415926535 * h1 * R*R,V2 =3.1415926535 * h2 * R*R,//h*pi*r*r; V2> V1
+	R = 8.3144626181, Mr = 28.98,Temperature = Temp+273;
 	
 	VD = (V2 - V1) / ElapsedTime;
 	float m1 = ((PA - 1000 * 10 * h1)*V1*Mr)/(R*Temperature),m2 = ((PA - 1000 * 10 * h2)*V2*Mr)/(R*Temperature);
@@ -289,12 +107,12 @@ void ChooseFrequency()
 				sendchar((Frequency%1000)/100+0x30);
 				sendchar((Frequency%100)/10+0x30);
 				sendchar(Frequency%10+0x30);
-				
+
 			}
 		}
 		else if (IsButtonPress(PINB & 0x4))
 		{
-			if (Frequency > 70)
+			if (Frequency > 20)
 			{
 				Frequency--;
 				setpos(0,1);
@@ -357,11 +175,7 @@ void ChooseTemp()
 
 void Testing()
 {
-	unsigned int Dark=0,WaterLight=0,Light=0;
 	ADCInit();
-	Dark = ReadEEPROMInt(0);
-	Light = ReadEEPROMInt(2);
-	WaterLight = ReadEEPROMInt(4);
 	
 	TimerInit();
 	char* Test1 = "Testing...", Test12 = "Stage 1 of 2",Test2 = "Testing...", Test22 = "Stage 2 of 2";
@@ -370,16 +184,15 @@ void Testing()
 	SendStr(Test1);
 	setpos(0,1);
 	SendStr(Test12);
-	PORTC |= 0x5;
+	PORTC = 0xFA;
 	
 	InitPWM();
 	StartPWM(Frequency);
 	while(1)
 	{
-		if(Stage == 1 && ADCConvert(0x5) >=50 && ADCConvert(0x5) <=70)
+		if(Stage == 1 && ADCConvert(0x4) >=50 && ADCConvert(0x5) <=70)
 		{
-			PORTC &= 0xF8;
-			PORTC |= 0x2;
+			PORTC = 0xFD;
 			StartTimer();
 			Stage = 2;
 			LCDClear();
@@ -388,11 +201,11 @@ void Testing()
 			SendStr(Test22);
 			
 		}	
-		else if(Stage == 2 &&  ADCConvert(0x4) >=650 && ADCConvert(0x4) <=850)
+		else if(Stage == 2 &&  ADCConvert(0x5) >=650 && ADCConvert(0x4) <=850)
 		{
 			StopTimer();
 			ElapsedTime = GetTime();
-			PORTC &= 0xF8;
+			PORTC |= 0x7;
 			StopPWM();
 			CountResault();
 			return;
@@ -401,21 +214,26 @@ void Testing()
 		if(Stage == 1)
 		{
 		LCDClear();
-		unsigned int buf = ADCConvert(0x5);
+		unsigned int buf = ADCConvert(0x4);
 		sendchar(buf/1000+0x30);
 		sendchar((buf%1000)/100+0x30);
 		sendchar((buf%100)/10+0x30);
 		sendchar(buf%10+0x30);
+						setpos(0,1);
+						SendStr(Test12);
 		}
 		if(Stage == 2)
 		{
 			LCDClear();
-			unsigned int buf = ADCConvert(0x4);
+			unsigned int buf = ADCConvert(0x5);
 			sendchar(buf/1000+0x30);
 			sendchar((buf%1000)/100+0x30);
 			sendchar((buf%100)/10+0x30);
 			sendchar(buf%10+0x30);
+							setpos(0,1);
+							SendStr(Test22);
 		}
+		_delay_ms(500);
 	}
 	
 }
@@ -451,10 +269,9 @@ int main(void)
 	sei();
 	PortInit();                                                    
 	LCDInit();
-	 while (1) 
+
+	while (1) 
     {
-		
-		IsCalibrate();
 		ChooseFrequency();
 		ChooseTemp();
 		Testing();
@@ -489,6 +306,9 @@ int main(void)
 			sendbyte(0x2,false);
 		}
 		_delay_ms(500);
+		
+		ElapsedTime = 0;
+		Tiks = 0;
 		
     }
 }
